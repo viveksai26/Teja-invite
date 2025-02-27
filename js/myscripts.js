@@ -23,6 +23,8 @@ installButton.addEventListener("click", async () => {
 });
 
 window.addEventListener("appinstalled", () => {
+  console.log('App already installed');
+  
   disableInAppInstallPrompt();
 });
 
