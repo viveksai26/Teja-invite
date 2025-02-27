@@ -19,12 +19,13 @@ installButton.addEventListener("click", async () => {
   }
   const result = await installPrompt.prompt();
   console.log(`Install prompt was: ${result.outcome}`);
-  disableInAppInstallPrompt();
+  if (result.outcome === 'accepted') {
+    disableInAppInstallPrompt();
+  }
 });
 
 window.addEventListener("appinstalled", () => {
   console.log('App already installed');
-  
   disableInAppInstallPrompt();
 });
 
