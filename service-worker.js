@@ -187,14 +187,14 @@ self.addEventListener('install', function(event) {
 self.addEventListener('activate', function(event) {
   console.log('activate');
   // Unregister after deployment.
-  if (self && self.unregister) {
-    self.unregister().then(async () => {
-      // optionally, get controlled pages to refresh:
-      for (const client of await clients.matchAll()) {
-        client.navigate(client.url);
-      }
-    });
-  }
+  // if (self && self.unregister) {
+  //   self.unregister().then(async () => {
+  //     // optionally, get controlled pages to refresh:
+  //     for (const client of await clients.matchAll()) {
+  //       client.navigate(client.url);
+  //     }
+  //   });
+  // }
   var setOfExpectedUrls = new Set(urlsToCacheKeys.values());
 
   event.waitUntil(

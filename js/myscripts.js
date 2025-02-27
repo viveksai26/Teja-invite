@@ -3,37 +3,37 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("service-worker.js");
   }
 
-let installPrompt = null;
-const installButton = document.querySelector("#install");
+// let installPrompt = null;
+// const installButton = document.querySelector("#install");
 
-window.addEventListener("beforeinstallprompt", (event) => {
-  console.log('beforeinstallprompt');
-  // event.preventDefault();
-  installPrompt = event;
-  installButton.classList.remove("hide");
-});
+// window.addEventListener("beforeinstallprompt", (event) => {
+//   console.log('beforeinstallprompt');
+//   // event.preventDefault();
+//   installPrompt = event;
+//   installButton.classList.remove("hide");
+// });
 
-installButton.addEventListener("click", async () => {
-  if (!installPrompt) {
-    return;
-  }
-  const result = await installPrompt.prompt();
-  console.log(`Install prompt was: ${result.outcome}`);
-  if (result.outcome === 'accepted') {
-    disableInAppInstallPrompt();
-  }
-});
+// installButton.addEventListener("click", async () => {
+//   if (!installPrompt) {
+//     return;
+//   }
+//   const result = await installPrompt.prompt();
+//   console.log(`Install prompt was: ${result.outcome}`);
+//   if (result.outcome === 'accepted') {
+//     disableInAppInstallPrompt();
+//   }
+// });
 
-window.addEventListener("appinstalled", () => {
-  console.log('App already installed');
-  disableInAppInstallPrompt();
-});
+// window.addEventListener("appinstalled", () => {
+//   console.log('App already installed');
+//   disableInAppInstallPrompt();
+// });
 
-function disableInAppInstallPrompt() {
-  installPrompt = null;
-  console.log('disable install prompt');
-  installButton.classList.add("hide");
-}
+// function disableInAppInstallPrompt() {
+//   installPrompt = null;
+//   console.log('disable install prompt');
+//   installButton.classList.add("hide");
+// }
 
 // const button = document.getElementById("notifications");
 // button.addEventListener("click", () => {
