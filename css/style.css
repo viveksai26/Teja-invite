@@ -32,6 +32,9 @@ body {
   text-align: center;
   width: unset;
 }
+.flip-clock-wrapper {
+  margin-top: 10px !important
+}
 
 #page {
   position: relative;
