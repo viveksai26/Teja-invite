@@ -1,6 +1,6 @@
 $(document).ready(function() {
   let clock;
-
+ let now = new Date():
   let years = now.getFullYear() - eventDate.getFullYear();
   let months = now.getMonth() - eventDate.getMonth();
 
