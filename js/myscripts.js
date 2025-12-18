@@ -3,7 +3,7 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("service-worker.js");
   }
 
-
+ 
  // let installPrompt = null;
 // const installButton = document.querySelector("#install");
 
