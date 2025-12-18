@@ -75,6 +75,14 @@ const PUBLIC_VAPID_KEY =
       }
     }
   }
+
+  // Test notification
+  registration.showNotification('Hello! 🎉', {
+    body: 'This is a test notification from your site.',
+    icon: '/favicon-32x32.png', // or any icon you have
+    badge: '/favicon-32x32.png',
+    data: { url: window.location.href }, // optional: open this URL on click
+  });
   
 
 /* ===============================
