@@ -1,15 +1,34 @@
 $(document).ready(function() {
   let clock;
 
-  // Grab the current date
-  let currentDate = new Date();
+  let years = now.getFullYear() - eventDate.getFullYear();
+  let months = now.getMonth() - eventDate.getMonth();
 
-  // Target future date/24 hour time/Timezone
-  let targetDate = moment.tz("2025-05-01 18:30", "Asia/Kolkata");
+  if (months < 0) {
+    years--;
+    months += 12;
+  }
 
-  // Calculate the difference in seconds between the future and current date
-  let diff =  currentDate.getTime() / 1000 - targetDate / 1000;
+  if (now.getDate() < eventDate.getDate()) {
+    months--;
+    if (months < 0) {
+      years--;
+      months += 12;
+    }
+  }
 
+  // ---- ANCHOR DATE ----
+  const anchor = new Date(eventDate);
+  anchor.setFullYear(eventDate.getFullYear() + years);
+  anchor.setMonth(eventDate.getMonth() + months);
+
+  const diff = Math.floor((now - anchor) / 1000);
+
+  // ---- UPDATE FLIPS ----
+  yearClock.setTime(years);
+  monthClock.setTime(months);
+  clock.setTime(diff)
+  
   if (diff <= 0) {
     // If remaining countdown is 0
     clock = $(".clock").FlipClock(0, {
