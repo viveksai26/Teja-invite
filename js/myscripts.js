@@ -8,7 +8,6 @@ const installButton = document.querySelector("#install");
 
 window.addEventListener("beforeinstallprompt", (event) => {
    console.log('beforeinstallprompt');
-    event.preventDefault();
    installPrompt = event;
    installButton.classList.remove("hide");
  });
