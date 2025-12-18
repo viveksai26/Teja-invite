@@ -1,18 +1,18 @@
 const eventDate = new Date("2025-05-01T10:30:00");
 
 // Years & Months flip clocks
-const yearClock = $(".years").FlipClock(0, {
+const yearClock = $(".years")?.FlipClock(0, {
   clockFace: "Counter",
   autoStart: false
 });
 
-const monthClock = $(".months").FlipClock(0, {
+const monthClock = $(".months")?.FlipClock(0, {
   clockFace: "Counter",
   autoStart: false
 });
 
 // Days-Hours-Minutes-Seconds
-const timeClock = $(".clock").FlipClock(0, {
+const clock = $(".clock").FlipClock(0, {
   clockFace: "DailyCounter",
   countdown: false,
   autoStart: true
@@ -48,7 +48,7 @@ function updateAll() {
   // ---- UPDATE FLIPS ----
   yearClock.setTime(years);
   monthClock.setTime(months);
-  timeClock.setTime(diffSeconds);
+  clock.setTime(diffSeconds);
 }
 
 // Initial + interval
