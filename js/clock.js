@@ -1,7 +1,7 @@
 $(document).ready(function() {
   let clock;
   let now = new Date();
-  let eventDate = moment.tz("2025-05-01 11:00", "Asia/Kolkata");
+  let eventDate = new Date("2025-05-01 11:00", "Asia/Kolkata");
   let years = now.getFullYear() - eventDate.getFullYear();
   let months = now.getMonth() - eventDate.getMonth();
 
