@@ -46,41 +46,28 @@ window.addEventListener(
 const PUBLIC_VAPID_KEY =
   'BENckvZvrVo9id-GNsaQVywyJ1b7gFDVx4eaSzh6Z01Mp2pkoiJKP_39H_R7EIVLtNsd1H8LihWBb2uIcKNe5U0';
 
-async function subscribeUserToPush() {
-  if (!('PushManager' in window)) {
-    console.warn('Push not supported');
-    return;
+  async function subscribeUserToPush() {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+  
+    const registration = await navigator.serviceWorker.ready;
+  
+    try {
+      const subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(PUBLIC_VAPID_KEY),
+      });
+  
+      await fetch('/save-subscription', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(subscription),
+      });
+      console.log('Push subscription successful!');
+    } catch (err) {
+      console.error('Failed to subscribe to push', err);
+    }
   }
-
-  const registration = await navigator.serviceWorker.ready;
-
-  // ✅ Avoid duplicate subscriptions
-  const existingSubscription =
-    await registration.pushManager.getSubscription();
-
-  if (existingSubscription) {
-    console.log('Already subscribed');
-    return;
-  }
-
-  const subscription = await registration.pushManager.subscribe({
-    userVisibleOnly: true,
-    applicationServerKey: urlBase64ToUint8Array(PUBLIC_VAPID_KEY),
-  });
-
-  console.log('Push subscribed:', subscription);
-
-  // OPTIONAL: send to backend only if exists
-  try {
-    await fetch('/save-subscription', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(subscription),
-    });
-  } catch (e) {
-    console.warn('No backend yet, skipping save');
-  }
-}
+  
 
 /* ===============================
    UTILS
