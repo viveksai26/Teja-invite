@@ -47,24 +47,32 @@ const PUBLIC_VAPID_KEY =
   'BENckvZvrVo9id-GNsaQVywyJ1b7gFDVx4eaSzh6Z01Mp2pkoiJKP_39H_R7EIVLtNsd1H8LihWBb2uIcKNe5U0';
 
   async function subscribeUserToPush() {
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
-  
-    const registration = await navigator.serviceWorker.ready;
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+      console.warn('Push not supported in this browser.');
+      return;
+    }
   
     try {
-      const subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(PUBLIC_VAPID_KEY),
-      });
+      const registration = await navigator.serviceWorker.ready;
   
-      await fetch('/save-subscription', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(subscription),
-      });
-      console.log('Push subscription successful!');
+      // Check if already subscribed
+      let subscription = await registration.pushManager.getSubscription();
+      if (!subscription) {
+        subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(PUBLIC_VAPID_KEY),
+        });
+      }
+  
+      // Log subscription to console instead of sending to backend
+      console.log('Push subscription:', subscription);
+  
     } catch (err) {
-      console.error('Failed to subscribe to push', err);
+      if (Notification.permission === 'denied') {
+        console.warn('User blocked notifications.');
+      } else {
+        console.error('Failed to subscribe to push', err);
+      }
     }
   }
   
