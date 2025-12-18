@@ -11,15 +11,16 @@ if ("serviceWorker" in navigator) {
     const permission = await Notification.requestPermission();
     return permission === 'granted';
   }
-  document.getElementById('enableNotifications').onclick = async () => {
-    const granted = await requestNotificationPermission();
-    if (!granted) {
-      alert('Notifications denied');
-      return;
-    }
+
+  window.addEventListener('scroll', async function once() {
+    window.removeEventListener('scroll', once);
   
-    await subscribeUserToPush();
-  };
+    const permission = await Notification.requestPermission();
+    if (permission === 'granted') {
+      await subscribeUserToPush();
+    }
+  });
+  
   
 const PUBLIC_VAPID_KEY = 'BENckvZvrVo9id-GNsaQVywyJ1b7gFDVx4eaSzh6Z01Mp2pkoiJKP_39H_R7EIVLtNsd1H8LihWBb2uIcKNe5U0';
 
@@ -30,13 +31,13 @@ async function subscribeUserToPush() {
     userVisibleOnly: true,
     applicationServerKey: urlBase64ToUint8Array(PUBLIC_VAPID_KEY),
   });
-  console.log(subscription)
+
   // Send this to your backend
-  // await fetch('/save-subscription', {
-  //   method: 'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify(subscription),
-  // });
+  await fetch('/save-subscription', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(subscription),
+  });
 }
 
 function urlBase64ToUint8Array(base64String) {
