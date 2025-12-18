@@ -28,9 +28,9 @@ $(document).ready(function() {
   const diff = Math.floor((now - anchor) / 1000);
 
   // ---- UPDATE FLIPS ----
-  yearClock.setTime(years);
-  monthClock.setTime(months);
-  clock.setTime(diff)
+  // yearClock.setTime(years);
+  // monthClock.setTime(months);
+  // clock.setTime(diff)
   
   if (diff <= 0) {
     
