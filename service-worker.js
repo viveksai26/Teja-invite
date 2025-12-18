@@ -186,17 +186,6 @@ self.addEventListener('install', function(event) {
 
 self.addEventListener('activate', function(event) {
   console.log('activate');
-  // Unregister after deployment.
-   if (self && self.unregister) {
-     self.unregister().then(async () => {
-  //     // optionally, get controlled pages to refresh:
-       for (const client of await clients.matchAll()) {
-         client.navigate(client.url);
-       }
-     });
-  }
-  var setOfExpectedUrls = new Set(urlsToCacheKeys.values());
-
   event.waitUntil(
     caches.open(cacheName).then(function(cache) {
       return cache.keys().then(function(existingRequests) {
@@ -270,9 +259,26 @@ self.addEventListener('fetch', function(event) {
   }
 });
 
+self.addEventListener('push', event => {
+  const data = event.data ? event.data.json() : {};
 
+  const title = data.title || 'New notification';
+  const options = {
+    body: data.body || '',
+    icon: '/icons/icon-192.png',
+    badge: '/icons/badge.png',
+    data: data.url || '/',
+  };
 
+  event.waitUntil(
+    self.registration.showNotification(title, options)
+  );
+});
 
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
 
-
-
+  event.waitUntil(
+    clients.openWindow(event.notification.data)
+  );
+});

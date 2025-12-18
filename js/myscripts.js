@@ -3,58 +3,49 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("service-worker.js");
   }
 
- 
- // let installPrompt = null;
-// const installButton = document.querySelector("#install");
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    window.location.reload();
+  })
 
-//window.addEventListener("beforeinstallprompt", (event) => {
- //  console.log('beforeinstallprompt');
- //  installPrompt = event;
-//   installButton.classList.remove("hide");
-// });
+  async function requestNotificationPermission() {
+    const permission = await Notification.requestPermission();
+    return permission === 'granted';
+  }
+  document.getElementById('enableNotifications').onclick = async () => {
+    const granted = await requestNotificationPermission();
+    if (!granted) {
+      alert('Notifications denied');
+      return;
+    }
+  
+    await subscribeUserToPush();
+  };
+  
+const PUBLIC_VAPID_KEY = 'BENckvZvrVo9id-GNsaQVywyJ1b7gFDVx4eaSzh6Z01Mp2pkoiJKP_39H_R7EIVLtNsd1H8LihWBb2uIcKNe5U0';
 
-//installButton?.addEventListener("click", async () => {
- //  if (!installPrompt) {
- //    return;
-//   }
-  // const result = await installPrompt.prompt();
-  // console.log(`Install prompt was: ${result.outcome}`);
- //  if (result.outcome === 'accepted') {
-//     disableInAppInstallPrompt();
-//  }
-// });
+async function subscribeUserToPush() {
+  const registration = await navigator.serviceWorker.ready;
 
-// window.addEventListener("appinstalled", () => {
-//   console.log('App already installed');
-//   disableInAppInstallPrompt();
-// });
+  const subscription = await registration.pushManager.subscribe({
+    userVisibleOnly: true,
+    applicationServerKey: urlBase64ToUint8Array(PUBLIC_VAPID_KEY),
+  });
+  console.log(subscription)
+  // Send this to your backend
+  // await fetch('/save-subscription', {
+  //   method: 'POST',
+  //   headers: { 'Content-Type': 'application/json' },
+  //   body: JSON.stringify(subscription),
+  // });
+}
 
-// function disableInAppInstallPrompt() {
-//   installPrompt = null;
- //  console.log('disable install prompt');
-//   installButton.classList.add("hide");
-// }
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding)
+    .replace(/-/g, '+')
+    .replace(/_/g, '/');
 
-// const button = document.getElementById("notifications");
- // button.addEventListener("click", () => {
-   Notification.requestPermission().then((result) => {
-     if (result === "granted") {
-       randomNotification();
-     } else {
-       console.log('NOtifications rejected');
-      
-     }
-   });
- // });
+  const rawData = atob(base64);
+  return Uint8Array.from([...rawData].map(c => c.charCodeAt(0)));
+}
 
-function randomNotification() {
-   const notifTitle = 'Title';
-   const notifBody = `Body `;
-   const notifImg = `./fprint.png`;
-   const options = {
-     body: notifBody,
-     icon: notifImg,
-   };
-   new Notification(notifTitle, options);
-    setTimeout(randomNotification, 3000);
- }
