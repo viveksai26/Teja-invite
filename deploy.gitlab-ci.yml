@@ -1,0 +1,18 @@
+image: alpine:latest
+
+stages:
+  - build
+  - deploy
+
+build-and-modify-sw:
+  stage: build
+  script:
+    - echo "Modifying service worker file..."
+    - # Example: Update the service worker file with a new version or timestamp
+    - sed -i 's/"version": ".*"/"version": "$(date +%s)"/' public/sw.js
+    - echo "Service worker updated."
+  artifacts:
+    paths:
+      - public/
+  only:
+    - main   
