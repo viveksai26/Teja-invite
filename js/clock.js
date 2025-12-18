@@ -8,7 +8,7 @@ $(document).ready(function() {
   let targetDate = moment.tz("2025-05-01 18:30", "Asia/Kolkata");
 
   // Calculate the difference in seconds between the future and current date
-  let diff = targetDate / 1000 - currentDate.getTime() / 1000;
+  let diff =  currentDate.getTime() / 1000 - targetDate / 1000;
 
   if (diff <= 0) {
     // If remaining countdown is 0
