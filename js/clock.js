@@ -14,7 +14,6 @@ $(document).ready(function() {
     // If remaining countdown is 0
     clock = $(".clock").FlipClock(0, {
       clockFace: "DailyCounter",
-      countdown: true,
       autostart: false
     });
     console.log("Date has already passed!")
@@ -23,7 +22,6 @@ $(document).ready(function() {
     // Run countdown timer
     clock = $(".clock").FlipClock(diff, {
       clockFace: "DailyCounter",
-      countdown: true,
       callbacks: {
         stop: function() {
           console.log("Timer has ended!")
