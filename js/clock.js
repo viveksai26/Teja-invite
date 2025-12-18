@@ -1,9 +1,27 @@
-$(document).ready(function() {
-  let clock;
-  let yearClock;
-  let monthClock;
-  let now = new Date();
-  let eventDate = new Date("2025-05-01 11:00", "Asia/Kolkata");
+const eventDate = new Date("2025-05-01T10:30:00");
+
+// Years & Months flip clocks
+const yearClock = $(".years").FlipClock(0, {
+  clockFace: "Counter",
+  autoStart: false
+});
+
+const monthClock = $(".months").FlipClock(0, {
+  clockFace: "Counter",
+  autoStart: false
+});
+
+// Days-Hours-Minutes-Seconds
+const timeClock = $(".clock").FlipClock(0, {
+  clockFace: "DailyCounter",
+  countdown: false,
+  autoStart: true
+});
+
+function updateAll() {
+  const now = new Date();
+
+  // ---- CALCULATE YEARS & MONTHS ----
   let years = now.getFullYear() - eventDate.getFullYear();
   let months = now.getMonth() - eventDate.getMonth();
 
@@ -25,68 +43,14 @@ $(document).ready(function() {
   anchor.setFullYear(eventDate.getFullYear() + years);
   anchor.setMonth(eventDate.getMonth() + months);
 
-  const diff = Math.floor((now - anchor) / 1000);
+  const diffSeconds = Math.floor((now - anchor) / 1000);
 
   // ---- UPDATE FLIPS ----
-  // yearClock.setTime(years);
-  // monthClock.setTime(months);
-  // clock.setTime(diff)
-  
-  if (diff <= 0) {
-    
-    const yearClock = $(".years").FlipClock(0, {
-  clockFace: "Counter",
-  autoStart: false
-});
+  yearClock.setTime(years);
+  monthClock.setTime(months);
+  timeClock.setTime(diffSeconds);
+}
 
-const monthClock = $(".months").FlipClock(0, {
-  clockFace: "Counter",
-  autoStart: false
-});
-
-
-    // If remaining countdown is 0
-    clock = $(".clock").FlipClock(0, {
-      clockFace: "DailyCounter",
-      autostart: false
-    });
-    console.log("Date has already passed!")
-    
-  } else {
-    const yearClock = $(".years").FlipClock(0, {
-  clockFace: "Counter",
-  autoStart: false
-});
-
-const monthClock = $(".months").FlipClock(0, {
-  clockFace: "Counter",
-  autoStart: false
-});
-
-
-    // Run countdown timer
-    clock = $(".clock").FlipClock(diff, {
-      clockFace: "DailyCounter",
-      callbacks: {
-        stop: function() {
-          console.log("Timer has ended!")
-        }
-      }
-    });
-    
-    // Check when timer reaches 0, then stop at 0
-    setTimeout(function() {
-      checktime();
-    }, 1000);
-    
-    function checktime() {
-      t = clock.getTime();
-      if (t <= 0) {
-        clock.setTime(0);
-      }
-      setTimeout(function() {
-        checktime();
-      }, 1000);
-    }
-  }
-});
+// Initial + interval
+updateAll();
+setInterval(updateAll, 1000);
