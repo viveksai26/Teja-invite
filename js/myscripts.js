@@ -1,12 +1,11 @@
 /* ===============================
-   SERVICE WORKER REGISTRATION
+   SERVICE WORKER
 ================================ */
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/service-worker.js');
 }
 
-/* Reload page only when a NEW SW takes control */
 let refreshing = false;
 navigator.serviceWorker.addEventListener('controllerchange', () => {
   if (refreshing) return;
@@ -15,24 +14,22 @@ navigator.serviceWorker.addEventListener('controllerchange', () => {
 });
 
 /* ===============================
-   NOTIFICATION PERMISSION
+   NOTIFICATION LOGIC
 ================================ */
 
-async function requestNotificationPermission() {
-  if (!('Notification' in window)) return false;
+let userInteracted = false;
 
-  const permission = await Notification.requestPermission();
-  return permission === 'granted';
-}
-
-/* Ask permission ONLY after user interaction */
 window.addEventListener(
   'scroll',
-  async function once() {
-    window.removeEventListener('scroll', once);
+  async function onFirstScroll() {
+    window.removeEventListener('scroll', onFirstScroll);
+    userInteracted = true;
 
-    const granted = await requestNotificationPermission();
-    if (granted) {
+    // 🚨 DO NOT request permission unless default
+    if (Notification.permission !== 'default') return;
+
+    const permission = await Notification.requestPermission();
+    if (permission === 'granted') {
       await subscribeUserToPush();
     }
   },
@@ -47,39 +44,17 @@ const PUBLIC_VAPID_KEY =
   'BENckvZvrVo9id-GNsaQVywyJ1b7gFDVx4eaSzh6Z01Mp2pkoiJKP_39H_R7EIVLtNsd1H8LihWBb2uIcKNe5U0';
 
 async function subscribeUserToPush() {
-  if (!('PushManager' in window)) {
-    console.warn('Push not supported');
-    return;
-  }
+  if (!('PushManager' in window)) return;
 
   const registration = await navigator.serviceWorker.ready;
 
-  // ✅ Avoid duplicate subscriptions
-  const existingSubscription =
-    await registration.pushManager.getSubscription();
+  const existing = await registration.pushManager.getSubscription();
+  if (existing) return;
 
-  if (existingSubscription) {
-    console.log('Already subscribed');
-    return;
-  }
-
-  const subscription = await registration.pushManager.subscribe({
+  await registration.pushManager.subscribe({
     userVisibleOnly: true,
     applicationServerKey: urlBase64ToUint8Array(PUBLIC_VAPID_KEY),
   });
-
-  console.log('Push subscribed:', subscription);
-
-  // OPTIONAL: send to backend only if exists
-  try {
-    await fetch('/save-subscription', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(subscription),
-    });
-  } catch (e) {
-    console.warn('No backend yet, skipping save');
-  }
 }
 
 /* ===============================
@@ -92,6 +67,6 @@ function urlBase64ToUint8Array(base64String) {
     .replace(/-/g, '+')
     .replace(/_/g, '/');
 
-  const rawData = atob(base64);
-  return Uint8Array.from([...rawData].map(c => c.charCodeAt(0)));
+  const raw = atob(base64);
+  return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
 }
