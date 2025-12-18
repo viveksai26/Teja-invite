@@ -2,14 +2,13 @@ $(document).ready(function() {
 const eventDate = new Date("2025-05-01T10:30:00");
 
 // Years & Months flip clock
-if  ($(".years") ){
-const yearClock = $(".years")?.FlipClock(0, {
+const yearClock = $(".years").FlipClock(0, {
   clockFace: "Counter",
   autoStart: false
 });
-}
 
-const monthClock = $(".months")?.FlipClock(0, {
+
+const monthClock = $(".months").FlipClock(0, {
   clockFace: "Counter",
   autoStart: false
 });
