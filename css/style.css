@@ -20,6 +20,16 @@ body {
   background: #fff;
 }
 
+.flip-wrapper {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.flip {
+  text-align: center;
+}
+
 #page {
   position: relative;
   overflow-x: hidden;
