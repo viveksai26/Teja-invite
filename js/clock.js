@@ -33,6 +33,18 @@ $(document).ready(function() {
   clock.setTime(diff)
   
   if (diff <= 0) {
+    
+    const yearClock = $(".years").FlipClock(0, {
+  clockFace: "Counter",
+  autoStart: false
+});
+
+const monthClock = $(".months").FlipClock(0, {
+  clockFace: "Counter",
+  autoStart: false
+});
+
+
     // If remaining countdown is 0
     clock = $(".clock").FlipClock(0, {
       clockFace: "DailyCounter",
@@ -41,6 +53,17 @@ $(document).ready(function() {
     console.log("Date has already passed!")
     
   } else {
+    const yearClock = $(".years").FlipClock(0, {
+  clockFace: "Counter",
+  autoStart: false
+});
+
+const monthClock = $(".months").FlipClock(0, {
+  clockFace: "Counter",
+  autoStart: false
+});
+
+
     // Run countdown timer
     clock = $(".clock").FlipClock(diff, {
       clockFace: "DailyCounter",
