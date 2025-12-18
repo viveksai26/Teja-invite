@@ -1,47 +1,93 @@
-if ("serviceWorker" in navigator) {
-    // register service worker
-    navigator.serviceWorker.register("service-worker.js");
-  }
+/* ===============================
+   SERVICE WORKER REGISTRATION
+================================ */
 
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
-    window.location.reload();
-  })
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/service-worker.js');
+}
 
-  async function requestNotificationPermission() {
-    const permission = await Notification.requestPermission();
-    return permission === 'granted';
-  }
+/* Reload page only when a NEW SW takes control */
+let refreshing = false;
+navigator.serviceWorker.addEventListener('controllerchange', () => {
+  if (refreshing) return;
+  refreshing = true;
+  window.location.reload();
+});
 
-  window.addEventListener('scroll', async function once() {
+/* ===============================
+   NOTIFICATION PERMISSION
+================================ */
+
+async function requestNotificationPermission() {
+  if (!('Notification' in window)) return false;
+
+  const permission = await Notification.requestPermission();
+  return permission === 'granted';
+}
+
+/* Ask permission ONLY after user interaction */
+window.addEventListener(
+  'scroll',
+  async function once() {
     window.removeEventListener('scroll', once);
-  
-    const permission = await Notification.requestPermission();
-    if (permission === 'granted') {
+
+    const granted = await requestNotificationPermission();
+    if (granted) {
       await subscribeUserToPush();
     }
-  });
-  
-  
-const PUBLIC_VAPID_KEY = 'BENckvZvrVo9id-GNsaQVywyJ1b7gFDVx4eaSzh6Z01Mp2pkoiJKP_39H_R7EIVLtNsd1H8LihWBb2uIcKNe5U0';
+  },
+  { once: true }
+);
+
+/* ===============================
+   PUSH SUBSCRIPTION
+================================ */
+
+const PUBLIC_VAPID_KEY =
+  'BENckvZvrVo9id-GNsaQVywyJ1b7gFDVx4eaSzh6Z01Mp2pkoiJKP_39H_R7EIVLtNsd1H8LihWBb2uIcKNe5U0';
 
 async function subscribeUserToPush() {
+  if (!('PushManager' in window)) {
+    console.warn('Push not supported');
+    return;
+  }
+
   const registration = await navigator.serviceWorker.ready;
+
+  // ✅ Avoid duplicate subscriptions
+  const existingSubscription =
+    await registration.pushManager.getSubscription();
+
+  if (existingSubscription) {
+    console.log('Already subscribed');
+    return;
+  }
 
   const subscription = await registration.pushManager.subscribe({
     userVisibleOnly: true,
     applicationServerKey: urlBase64ToUint8Array(PUBLIC_VAPID_KEY),
   });
 
-  // Send this to your backend
-  await fetch('/save-subscription', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(subscription),
-  });
+  console.log('Push subscribed:', subscription);
+
+  // OPTIONAL: send to backend only if exists
+  try {
+    await fetch('/save-subscription', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(subscription),
+    });
+  } catch (e) {
+    console.warn('No backend yet, skipping save');
+  }
 }
 
+/* ===============================
+   UTILS
+================================ */
+
 function urlBase64ToUint8Array(base64String) {
-  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding)
     .replace(/-/g, '+')
     .replace(/_/g, '/');
@@ -49,4 +95,3 @@ function urlBase64ToUint8Array(base64String) {
   const rawData = atob(base64);
   return Uint8Array.from([...rawData].map(c => c.charCodeAt(0)));
 }
-
