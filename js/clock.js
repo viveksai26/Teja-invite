@@ -1,3 +1,4 @@
+$(document).ready(function() {
 const eventDate = new Date("2025-05-01T10:30:00");
 
 // Years & Months flip clock
@@ -56,3 +57,5 @@ function updateAll() {
 // Initial + interval
 updateAll();
 setInterval(updateAll, 1000);
+
+});
