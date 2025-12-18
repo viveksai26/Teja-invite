@@ -23,7 +23,7 @@ jobs:
       - name: Update Service Worker Version
         run: |
           # Generates a version based on the timestamp (e.g., v20251218.1755)
-          NEW_VERSION="v$(date +'%Y%m%d.%H+5%M+30')"
+          NEW_VERSION="v$(date +'%Y%m%d.%H%M')"
           echo "Updating service worker to version: $NEW_VERSION"
           
           # Replaces the value of a variable named 'VERSION' in your JS file
