@@ -1,43 +1,39 @@
-# Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
+name: Deploy to Netlify Branch
 
 on:
-  # Runs on pushes targeting the default branch
   push:
-    branches: ["main"]
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
+    branches:
+      - main
 
 jobs:
-  # Single deploy job since we're just deploying
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          # Upload entire repository
-          path: '.'
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+
+      - name: Update Service Worker Version
+        run: |
+          # Generates a version based on the timestamp (e.g., v20251218.1755)
+          NEW_VERSION="v$(date +'%Y%m%d.%H%M')"
+          echo "Updating service worker to version: $NEW_VERSION"
+          
+          # Replaces the value of a variable named 'VERSION' in your JS file
+          # Adjust the regex below to match your specific file's syntax
+          sed -i "s/const VERSION = '.*'/const VERSION = '$NEW_VERSION'/" service-worker.js
+
+      - name: Commit and Push to Netlify Branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Force a 'deploy' branch to match the current state of main + version change
+          git checkout -b deploy
+          git add service-worker.js
+          git commit -m "chore: update sw version to $(date +'%Y-%m-%d %H:%M')"
+          
+          # Force push to the 'deploy' branch so Netlify always sees the latest
+          git push origin deploy --force
