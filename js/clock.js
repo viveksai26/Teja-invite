@@ -1,5 +1,7 @@
 $(document).ready(function() {
   let clock;
+  let yearClock;
+  let monthClock;
   let now = new Date();
   let eventDate = new Date("2025-05-01 11:00", "Asia/Kolkata");
   let years = now.getFullYear() - eventDate.getFullYear();
