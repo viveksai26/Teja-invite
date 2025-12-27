@@ -1,6 +1,6 @@
 /* ===== Modern Service Worker ===== */
 
-const VERSION = 'v1.0.0'; // bump on every deploy
+const VERSION = 'v20251227.1618'; // bump on every deploy
 const CACHE_NAME = `app-cache-${VERSION}`;
 
 const STATIC_ASSETS = [
