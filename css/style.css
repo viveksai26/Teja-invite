@@ -26,6 +26,9 @@ body {
   align-items: center;
   flex-wrap: wrap;
   justify-content: center;
+    margin-top: 0px !important
+  margin-bottom: 0px !important
+  
 }
 
 .flip {
