@@ -31,9 +31,13 @@ body {
 .flip {
   text-align: center;
   width: unset;
+  margin-top: 0px !important
+  margin-bottom: 0px !important
+  
 }
 .flip-clock-wrapper {
   margin-top: 0px !important
+  margin-bottom: 0px !important
 }
 
 #page {
